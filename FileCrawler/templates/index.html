@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Function and Class Parser</title>
+</head>
+<body>
+    <h1>Function and Class Parser</h1>
+    <form id="fileForm">
+        <label for="fileInput">Enter File Path:</label>
+        <input type="text" id="fileInput" name="file_path" required>
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="output">
+        <h2>Output:</h2>
+        <p id="functionOutput"></p>
+        <pre id="functionBodies"></pre>
+        <p id="classOutput"></p>
+        <pre id="classBodies"></pre>
+    </div>
+
+    <script>
+        document.getElementById("fileForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const fileInput = document.getElementById("fileInput").value;
+
+            fetch('/parse_file', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ file_path: fileInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("functionOutput").innerText = `Number of functions: ${data.functions.length}`;
+                document.getElementById("functionBodies").innerText = data.functions.map(f => f.body).join('\n\n');
+                document.getElementById("classOutput").innerText = `Number of classes: ${data.classes.length}`;
+                document.getElementById("classBodies").innerText = data.classes.map(c => c.body).join('\n\n');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
